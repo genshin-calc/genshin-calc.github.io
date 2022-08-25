@@ -15,24 +15,23 @@
 		var endpoint = "";
 		var auth = "";
 		var publicKey = "";
-		window.addEventListener('load', () => {
-			if ('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('./serviceworker.js');
-				navigator.serviceWorker.ready
-					.then(function (registration) {
-						return registration.pushManager.subscribe({ userVisibleOnly: true });
-					})
-					.then(function (subscription) {
-						endpoint = subscription.endpoint;
-						console.log('GCM EndPoint is:' + endpoint);
-						auth = subscription.getKey('auth') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))) : '';
-						console.log('User Auth is:' + auth);
-						publicKey = subscription.getKey('p256dh') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))) : '';
-						console.log('User PublicKey is:' + publicKey);
-					})
-					.catch(console.error.bind(console));
-			}
-		});
+
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('./serviceworker.js');
+			navigator.serviceWorker.ready
+				.then(function (registration) {
+					return registration.pushManager.subscribe({ userVisibleOnly: true });
+				})
+				.then(function (subscription) {
+					endpoint = subscription.endpoint;
+					console.log('GCM EndPoint is:' + endpoint);
+					auth = subscription.getKey('auth') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))) : '';
+					console.log('User Auth is:' + auth);
+					publicKey = subscription.getKey('p256dh') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))) : '';
+					console.log('User PublicKey is:' + publicKey);
+				})
+				.catch(console.error.bind(console));
+		}
 	</script>
 </head>
 
@@ -119,15 +118,7 @@
 										}).fail(function () {
 											alert('通信に失敗しました。');
 										});
-										setTimeout(function () {
-											var notification_after_timeout = new Notification("樹脂が満タンになります", {
-												body: "まもなく樹脂が満タンになります。\n冒険があなたを待っています!",
-												icon: "images/resin2.webp"
-											});
-											notification_after_timeout.onclick = function () {
-												window.focus();
-											}
-										}, time);
+
 										return;
 									}
 									/*
@@ -165,7 +156,7 @@
 									}, time);
 									*/
 								});
-							
+
 						}
 
 					}
