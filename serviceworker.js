@@ -1,9 +1,3 @@
-self.addEventListener('fetch', function (event) {
-    event.respondWith(
-      new Response('サービスワーカーが動いています！')
-    );
-});
-
 self.addEventListener('push', function (event) {
     console.log('Received a push message', event);
     var title = "樹脂が満タンになります";
