@@ -20,7 +20,8 @@
 			navigator.serviceWorker.register('./serviceworker.js');
 			navigator.serviceWorker.ready
 				.then(function (registration) {
-					return registration.pushManager.subscribe({ userVisibleOnly: true });
+					return registration.pushManager.subscribe({ userVisibleOnly: true,
+                    applicationServerKey: "BID2qX2fWeY2cGNpqeGX8zchZOBdYG6ekMdW-vMae2IGZPT5Ws6mD8gM4As7bgrvgRKG3xnP_xnBySiPoZfIHlU" });
 				})
 				.then(function (subscription) {
 					endpoint = subscription.endpoint;
