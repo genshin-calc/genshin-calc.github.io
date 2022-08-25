@@ -109,7 +109,7 @@
 										time = time + 24 * 60 * 60 * 1000;
 									}
 									var notification = new Notification("樹脂が回復したらお知らせします", {
-										body: "樹脂が指定値まで回復するまであと" + Math.floor((160 - resin_max) * 8 / 60) + "時間" + Math.floor((160 - resin_max) * 8 % 60) + "分です。\nこのページを開いたままにしてください。",
+										body: "" + hour + "時間" + minute + "分後にお知らせします。\nこのページを開いたままにしてください。",
 										icon: "images/resin.webp"
 									});
 									notification.onclick = function () {
