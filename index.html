@@ -9,6 +9,31 @@
 	<noscript>
 		<link rel="stylesheet" href="assets/css/noscript.css" />
 	</noscript>
+	<link rel="manifest" href="./manifest.json">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script type="module">
+		var endpoint = "";
+		var auth = "";
+		var publicKey = "";
+		window.addEventListener('load', () => {
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('./serviceworker.js');
+				navigator.serviceWorker.ready
+					.then(function (registration) {
+						return registration.pushManager.subscribe({ userVisibleOnly: true });
+					})
+					.then(function (subscription) {
+						endpoint = subscription.endpoint;
+						console.log('GCM EndPoint is:' + endpoint);
+						auth = subscription.getKey('auth') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))) : '';
+						console.log('User Auth is:' + auth);
+						publicKey = subscription.getKey('p256dh') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))) : '';
+						console.log('User PublicKey is:' + publicKey);
+					})
+					.catch(console.error.bind(console));
+			}
+		});
+	</script>
 </head>
 
 <body class="is-preload">
@@ -56,7 +81,6 @@
 				<input type="number" id="minute" min="0" max="59" value="0" onkeyup="calc(false)">分</br>
 				</br>
 				<input type="number" id="resin_max" min="0" max="160" value="0" disabled>樹脂</br>
-				<button onclick="notification(false)">この時間が経過したら通知</button>
 				<script>
 					function notification(bool) {
 						if (!('Notification' in window)) {
@@ -75,14 +99,26 @@
 									}
 									if (bool) {
 										var now = document.getElementById("now").value;
-										var notification = new Notification("樹脂が満タンになったらお知らせします", {
-											body: "樹脂が満タンになるまであと" + Math.floor((160 - now) * 8 / 60) + "時間" + Math.floor((160 - now) * 8 % 60) + "分です。\nこのページを開いたままにしてください。",
-											icon: "images/resin.webp"
-										});
-										notification.onclick = function () {
-											window.focus();
-										}
 										var time = (160 - now) * 8 * 60 * 1000;
+										$.ajax({
+											url: 'https://gcalc.f5.si/',
+											type: 'POST',
+											data: {
+												endpoint: endpoint,
+												auth: auth,
+												publicKey: publicKey
+											},
+										}).done(function (data) {
+											var notification = new Notification("樹脂が満タンになったらお知らせします", {
+												body: "樹脂が満タンになるまであと" + Math.floor((160 - now) * 8 / 60) + "時間" + Math.floor((160 - now) * 8 % 60) + "分です。\nこのページを開いたままにしてください。",
+												icon: "images/resin.webp"
+											});
+											notification.onclick = function () {
+												window.focus();
+											}
+										}).fail(function () {
+											alert('通信に失敗しました。');
+										});
 										setTimeout(function () {
 											var notification_after_timeout = new Notification("樹脂が満タンになります", {
 												body: "まもなく樹脂が満タンになります。\n冒険があなたを待っています!",
@@ -94,6 +130,7 @@
 										}, time);
 										return;
 									}
+									/*
 									var hour = document.getElementById("hour").value;
 									var minute = document.getElementById("minute").value;
 									var resin_max = document.getElementById("resin_max").value;
@@ -109,12 +146,14 @@
 										time = time + 24 * 60 * 60 * 1000;
 									}
 									var notification = new Notification("樹脂が回復したらお知らせします", {
-										body: "" + hour + "時間" + minute + "分後にお知らせします。\nこのページを開いたままにしてください。",
+										body: "" + hour + "時間" + minute + "分後にお知らせします。",
 										icon: "images/resin.webp"
 									});
 									notification.onclick = function () {
 										window.focus();
 									}
+
+
 									setTimeout(function () {
 										var notification_after_timeout = new Notification("樹脂が回復しました", {
 											body: "まもなく樹脂が指定値まで回復します。\n冒険があなたを待っています!",
@@ -124,7 +163,9 @@
 											window.focus();
 										}
 									}, time);
+									*/
 								});
+							
 						}
 
 					}
