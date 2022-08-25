@@ -46,22 +46,85 @@
 					#Original_Resin_natural_recovery>input {
 						background-color: rgba(59, 59, 59, 0.3);
 					}
-				</style>				<h2 class="major">樹脂自然回復計算</h2>
+				</style>
+				<h2 class="major">樹脂自然回復計算</h2>
 				<p>時間経過による樹脂の自然回復量を計算します。</p>
-				<input type="number" id="hour" min="0" max="23" value="0" onkeyup="calc()">時間</br>
-				<input type="number" id="minute" min="0" max="59" value="0" onkeyup="calc()">分</br>
+				<input type="number" id="now" min="0" max="160 "value="0" onkeyup="calc(true)">樹脂の現在値</br>
+				<button onclick="notification(true)">樹脂が満タンに近づいたら通知</button>
+				<p style="background-color: rgba(255,165,0, 0.5);" id="How_long_do_I_have_to_wait?"></p>
+				<input type="number" id="hour" min="0" max="23" value="0" onkeyup="calc(false)">時間
+				<input type="number" id="minute" min="0" max="59" value="0" onkeyup="calc(false)">分</br>
 				</br>
 				<input type="number" id="resin_max" min="0" max="160" value="0" disabled>樹脂</br>
+				<button onclick="notification(false)">この時間が経過したら通知</button>
 				<script>
-					function calc() {
+					function notification(bool) {
+						if (bool) {
+							var now = document.getElementById("now").value;
+							var notification = new Notification("樹脂が満タンになったらお知らせします", {
+								body: "樹脂が満タンになるまであと" + Math.floor((160 - now) * 8 / 60) + "時間" + Math.floor((160 - now) * 8 % 60) + "分です。\nこのページを開いたままにしてください。",
+								icon: "images/resin.webp"
+							});
+							notification.onclick = function () {
+								window.focus();
+							}
+							var time = (160 - now) * 8 * 60 * 1000;
+							setTimeout(function () {
+								var notification_after_timeout = new Notification("樹脂が満タンになります", {
+									body: "まもなく樹脂が満タンになります。\n冒険があなたを待っています!",
+									icon: "images/resin2.webp"
+								});
+								notification_after_timeout.onclick = function () {
+									window.focus();
+								}
+							}, time);
+							return;
+						}
+						var hour = document.getElementById("hour").value;
+						var minute = document.getElementById("minute").value;
+						var resin_max = document.getElementById("resin_max").value;
+						var now = new Date();
+						var now_hour = now.getHours();
+						var now_minute = now.getMinutes();
+						var now_second = now.getSeconds();
+						var now_millisecond = now.getMilliseconds();
+						var now_time = now_hour * 60 * 60 * 1000 + now_minute * 60 * 1000 + now_second * 1000 + now_millisecond;
+						var target_time = hour * 60 * 60 * 1000 + minute * 60 * 1000;
+						var time = target_time - now_time;
+						if (time < 0) {
+							time = time + 24 * 60 * 60 * 1000;
+						}
+                        var notification = new Notification("樹脂が回復したらお知らせします", {
+								body: "樹脂が指定値まで回復するまであと" + Math.floor((160 - resin_max) * 8 / 60) + "時間" + Math.floor((160 - resin_max) * 8 % 60) + "分です。\nこのページを開いたままにしてください。",
+								icon: "images/resin.webp"
+							});
+							notification.onclick = function () {
+								window.focus();
+							}
+							setTimeout(function () {
+								var notification_after_timeout = new Notification("樹脂が回復しました", {
+									body: "まもなく樹脂が指定値まで回復します。\n冒険があなたを待っています!",
+									icon: "images/resin2.webp"
+								});
+								notification_after_timeout.onclick = function () {
+									window.focus();
+								}
+							}, time);
+					}
+
+					function calc(bool) {
+						var now = document.getElementById("now").value;
 						var hour = document.getElementById("hour").value;
 						var minute = document.getElementById("minute").value;
 						var time = parseInt(hour) * 60 + parseInt(minute);
-						var resin_recovery = Math.floor(time / 8);
+						var resin_recovery = Math.floor(time / 8)  + parseInt(now);
 						if (resin_recovery > 160) {
 							resin_recovery = 160;
 						}
 						document.getElementById("resin_max").value = resin_recovery;
+						if (bool) {
+							document.getElementById("How_long_do_I_have_to_wait?").innerHTML = "樹脂が満タンになるまであと" + Math.floor((160 - now) * 8 / 60) + "時間" + Math.floor((160 - now) * 8 % 60) + "分です。";
+						}
 					}
 				</script>
 			</article>
@@ -75,7 +138,7 @@
 						background-color: rgba(59, 59, 59, 0.3);
 					}
 				</style>
-                <input type="number" id="base" min="1" max="10" value="1" onkeyup="calc2()">シールド基礎吸収量</br>
+				<input type="number" id="base" min="1" max="10" value="1" onkeyup="calc2()">シールド基礎吸収量</br>
 				<input type="number" id="mod" min="1" value="1" onkeyup="calc2()">シールド追加吸収量(%を除く)</br>
 				<input type="number" id="HP" min="1" value="1" onkeyup="calc2()">総HP</br>
 				</br>
@@ -86,9 +149,9 @@
 				<input type="number" id="shield3" min="1" value="1" disabled>シールド耐久値(岩の宸断3段階目)</br>
 				<input type="number" id="shield4" min="1" value="1" disabled>シールド耐久値(岩の宸断4段階目)</br>
 				<input type="number" id="shield5" min="1" value="1" disabled>シールド耐久値(岩の宸断5段階目)</br>
-				
+
 				<script>
-					function calc2(){
+					function calc2() {
 						var base = document.getElementById("base").value;
 						var mod = document.getElementById("mod").value;
 						var HP = document.getElementById("HP").value;
@@ -113,7 +176,8 @@
 
 		<!-- Footer -->
 		<footer id="footer">
-			<p class="copyright">&copy; 2022 naayu1012 Genshin calculator. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+			<p class="copyright">&copy; 2022 naayu1012 Genshin calculator. Design: <a href="https://html5up.net">HTML5
+					UP</a>.</p>
 		</footer>
 
 	</div>
