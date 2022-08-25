@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<title>Genshin calculator</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<noscript>
+		<link rel="stylesheet" href="assets/css/noscript.css" />
+	</noscript>
+</head>
+
+<body class="is-preload">
+
+	<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- Header -->
+		<header id="header">
+			<div class="logo">
+				<span class="icon fa-gem"></span>
+			</div>
+			<div class="content">
+				<div class="inner">
+					<h1>Genshin calculator</h1>
+					<p>原神に関する計算をweb上でできるようにします。機能は適宜追加します。</p>
+					<p>Created by <a href="https://twitter.com/naayu1012">@naayu1012</a></p>
+				</div>
+			</div>
+			<nav>
+				<ul>
+					<li><a href="#Original_Resin_natural_recovery">樹脂自然回復計算</a></li>
+					<li><a href="#shield_durability_calculation">鍾離耐久値計算</a></li>
+					<!--<li><a href="#"></a></li>-->
+				</ul>
+			</nav>
+		</header>
+
+		<!-- Main -->
+		<div id="main">
+
+			<!-- Original_Resin_natural_recovery -->
+			<article id="Original_Resin_natural_recovery">
+				<style>
+					#Original_Resin_natural_recovery>input {
+						background-color: rgba(59, 59, 59, 0.3);
+					}
+				</style>				<h2 class="major">樹脂自然回復計算</h2>
+				<p>時間経過による樹脂の自然回復量を計算します。</p>
+				<input type="number" id="hour" min="0" max="23" value="0" onkeyup="calc()">時間</br>
+				<input type="number" id="minute" min="0" max="59" value="0" onkeyup="calc()">分</br>
+				</br>
+				<input type="number" id="resin_max" min="0" max="160" value="0" disabled>樹脂</br>
+				<script>
+					function calc() {
+						var hour = document.getElementById("hour").value;
+						var minute = document.getElementById("minute").value;
+						var time = parseInt(hour) * 60 + parseInt(minute);
+						var resin_recovery = Math.floor(time / 8);
+						if (resin_recovery > 160) {
+							resin_recovery = 160;
+						}
+						document.getElementById("resin_max").value = resin_recovery;
+					}
+				</script>
+			</article>
+
+			<!-- shield_durability_calculation -->
+			<article id="shield_durability_calculation">
+				<h2 class="major">鍾離シールド耐久値計算</h2>
+				<p>鍾離のシールドの耐久値を計算します。</p>
+				<style>
+					#shield_durability_calculation>input {
+						background-color: rgba(59, 59, 59, 0.3);
+					}
+				</style>
+                <input type="number" id="base" min="1" max="10" value="1" onkeyup="calc2()">シールド基礎吸収量</br>
+				<input type="number" id="mod" min="1" value="1" onkeyup="calc2()">シールド追加吸収量(%を除く)</br>
+				<input type="number" id="HP" min="1" value="1" onkeyup="calc2()">総HP</br>
+				</br>
+				<input type="number" id="shield" min="1" value="1" disabled>シールド耐久値(素)</br>
+				<input type="number" id="shield_rock" min="1" value="1" disabled>シールド耐久値(対岩元素)</br>
+				<input type="number" id="shield1" min="1" value="1" disabled>シールド耐久値(岩の宸断1段階目)</br>
+				<input type="number" id="shield2" min="1" value="1" disabled>シールド耐久値(岩の宸断2段階目)</br>
+				<input type="number" id="shield3" min="1" value="1" disabled>シールド耐久値(岩の宸断3段階目)</br>
+				<input type="number" id="shield4" min="1" value="1" disabled>シールド耐久値(岩の宸断4段階目)</br>
+				<input type="number" id="shield5" min="1" value="1" disabled>シールド耐久値(岩の宸断5段階目)</br>
+				
+				<script>
+					function calc2(){
+						var base = document.getElementById("base").value;
+						var mod = document.getElementById("mod").value;
+						var HP = document.getElementById("HP").value;
+						var baseshield = Math.floor(HP * (mod / 100)) + parseInt(base);
+						document.getElementById("shield").value = Math.floor(baseshield * 1.5);
+						document.getElementById("shield_rock").value = Math.floor(baseshield * 2.5);
+						document.getElementById("shield1").value = Math.floor(baseshield * 1.5 * 1.05);
+						document.getElementById("shield2").value = Math.floor(baseshield * 1.5 * 1.1);
+						document.getElementById("shield3").value = Math.floor(baseshield * 1.5 * 1.15);
+						document.getElementById("shield4").value = Math.floor(baseshield * 1.5 * 1.2);
+						document.getElementById("shield5").value = Math.floor(baseshield * 1.5 * 1.25);
+					}
+				</script>
+			</article>
+
+			<!-- any -->
+			<!--<article id="">
+				<h2 class="major"></h2>
+				<p></p>
+			</article>-->
+		</div>
+
+		<!-- Footer -->
+		<footer id="footer">
+			<p class="copyright">&copy; 2022 naayu1012 Genshin calculator. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+		</footer>
+
+	</div>
+
+	<!-- BG -->
+	<div id="bg"></div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
